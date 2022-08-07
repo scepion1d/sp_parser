@@ -1,7 +1,8 @@
 #!/usr/bin/ruby
 # frozen_string_literal: true
 
-require './lib/app_logger'
+Dir['./lib/*.rb', './app/*.rb'].each { |file| require file }
 
-AppLogger.info('Processing started')
-AppLogger.info('Processing finished')
+file_path = ARGV[0]
+
+FileProcessor.call(file_path)

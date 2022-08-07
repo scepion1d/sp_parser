@@ -3,3 +3,10 @@ AllCops:
 
 Style/Documentation:
   Enabled: false
+
+Naming/RescuedExceptionsVariableName:
+  PreferredName: error
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
