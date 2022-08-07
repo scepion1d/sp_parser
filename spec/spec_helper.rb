@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'simplecov'
-Dir['./lib/*.rb', './app/*.rb'].each { |file| require file }
+Dir['./lib/**/*.rb', './app/**/*.rb'].each { |file| require file }
 
 SimpleCov.start
 

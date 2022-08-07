@@ -2,31 +2,34 @@
 
 class FileProcessor
   def self.call(path)
-    safe_path = path.to_s
-    raise ArgumentError, "File path is invalid: `#{safe_path}`" if safe_path.empty?
+    AppLogger.info("Processing started: `#{path}`")
+    raise ArgumentError, "File path is invalid: `#{path}`" if path.to_s.empty?
 
-    AppLogger.info("Processing started: `#{safe_path}`")
-    new(safe_path).call
-    AppLogger.info("Processing finished: `#{safe_path}`")
+    new(path).call
+  ensure
+    AppLogger.info("Processing finished: `#{path}`")
   end
 
   def call
     read_file
-    parsed_logs = LogsFilter.process(raw_logs)
-
-    AppLogger.info("#{raw_logs.count} lines processd; #{parsed_logs.count} lines valid")
+    filter_logs
   rescue Errno::ENOENT, Errno::EISDIR => error
     AppLogger.error "Processing failure: #{error.message}"
   end
 
   private
 
-  attr_reader :path, :raw_logs, :parsed_logs
+  attr_reader :path, :raw_logs
 
   def initialize(path)
     @path = path
     @raw_logs = []
-    @parsed_logs = []
+  end
+
+  def filter_logs
+    filtered_logs = LogsFilter.process(raw_logs)
+    AppLogger.info("#{raw_logs.count} lines processd; #{filtered_logs.count} lines valid")
+    filtered_logs
   end
 
   # :reek:NilCheck

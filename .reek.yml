@@ -2,3 +2,6 @@
 detectors:
   IrresponsibleModule:
     enabled: false
+
+  DuplicateMethodCall:
+    allow_calls: ['\bclass\b']
