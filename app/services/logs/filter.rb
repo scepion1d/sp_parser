@@ -3,33 +3,34 @@
 module Logs
   class Filter
     def self.process(raw_logs)
-      unless raw_logs.instance_of?(Array)
-        raise ArgumentError, "Invalid argument type: expected Array, got`#{raw_logs.class}`"
-      end
-
       new(raw_logs).process
     end
 
-    # :reek:NilCheck
     def process
-      raw_logs.map do |log_line|
-        path, ip = match(log_line.to_s)
-        next if path.nil? || ip.nil?
-
-        { path: path, ip: ip }
-      end.compact
+      validate
+      filter
     end
 
     private
 
-    LOG_FORMAT = %r{^((?:/[a-z|\d_]+)+)\s{1}((?:[0-9]{1,3}\.){3}[0-9]{1,3})$}
-
     attr_reader :raw_logs
 
-    # :reek:UtilityFunction
-    def match(log_line)
-      match_data = log_line.match(LOG_FORMAT)
-      return match_data[1], match_data[2] if match_data
+    def validate
+      return if Logs::TypeValidator.valid?(raw_logs)
+
+      AppLogger.error "Can't process provided logs"
+      raise LogsError
+    end
+
+    def filter
+      filtered_logs = raw_logs.map do |log_line|
+        Logs::LineParser.process(log_line)
+      rescue LogsError
+        nil
+      end.compact
+
+      AppLogger.info("#{raw_logs.count} lines processd; #{filtered_logs.count} lines valid")
+      filtered_logs
     end
 
     def initialize(raw_logs)

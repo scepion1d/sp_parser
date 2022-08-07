@@ -2,55 +2,102 @@
 
 shared_examples 'generates unsorted stat' do
   it 'works correctly' do
-    expect(subject.get_data).to eq(expected_result)
+    expect(subject.get).to eq(expected_result)
   end
 end
 
 shared_examples 'generates sorted stat' do
   it 'works correctly' do
-    result = subject.get_data(order: order)
+    result = subject.get(order: order)
 
     expect(result).to eq(expected_result)
     expect(result.keys).to eq(expected_result.keys)
   end
 end
 
-shared_examples 'generates correct unsorted report' do
-  it 'works correctly' do
-    result = subject.get_report
-
-    expect(result).to start_with(expected_header)
-    expected_entries.each do |expected_entry|
-      expect(result).to include(expected_entry)
-    end
-  end
-end
-
-shared_examples 'generates correct sorted report' do
-  it 'works correctly' do
-    expect(subject.get_report(order: order)).to eq(expected_result)
-  end
-end
-
 module Stat
   describe Base do
-    subject(:stat) { described_class.new([]) }
+    subject(:service) { described_class.new(logs) }
+    let(:logs) { [] }
 
     describe '#stat' do
       it 'throws NotImplementedError error' do
-        expect { stat.send(:stat) }.to raise_error(NotImplementedError)
+        expect { service.send(:stat) }.to raise_error(NotImplementedError)
+      end
+
+      context 'when #stat method implemented' do
+        let(:initial_data) { [{ path: '/index', ip: '192.168.1.1' }] }
+        let(:processed_data) { [{ path: '/about', ip: '192.168.1.2' }] }
+
+        before do
+          allow_any_instance_of(described_class).to receive(:stat).and_return(initial_data)
+        end
+
+        shared_examples '#sort receives call' do
+          it 'correctly' do
+            expect(service.get(order: order)).to eq(processed_data)
+            expect(service).to have_received(:sort).with(initial_data, expected_order)
+          end
+        end
+
+        shared_examples '#sort doesn\'t receive call' do
+          it 'correctly' do
+            expect(service.get(order: order)).to eq(initial_data)
+            expect(service).not_to receive(:sort).with(initial_data, expected_order)
+          end
+        end
+
+        context 'when provided sotring order' do
+          let(:expected_order) { { asc: 1, dsc: -1 }[order] }
+
+          before do
+            allow_any_instance_of(described_class).to receive(:sort).with(initial_data,
+                                                                          expected_order).and_return(processed_data)
+          end
+
+          context ':asc' do
+            let(:order) { :asc }
+
+            it_behaves_like '#sort receives call'
+          end
+
+          context ':dsc' do
+            let(:order) { :dsc }
+
+            it_behaves_like '#sort receives call'
+          end
+
+          context 'incorrect value' do
+            let(:order) { :test }
+
+            it_behaves_like '#sort doesn\'t receive call'
+          end
+
+          context 'nil value' do
+            let(:order) { nil }
+
+            it_behaves_like '#sort doesn\'t receive call'
+          end
+        end
+
+        context 'when sorting order isn\'t provided' do
+          it '#sort doesn\'t receive call' do
+            expect(service.get).to eq(initial_data)
+            expect(service).not_to receive(:sort)
+          end
+        end
       end
     end
 
-    describe '#get_data' do
+    describe '#get' do
       it 'throws NotImplementedError error' do
-        expect { stat.get_data }.to raise_error(NotImplementedError)
+        expect { service.get }.to raise_error(NotImplementedError)
       end
     end
 
-    describe '#get_report' do
+    describe 'self#get' do
       it 'throws NotImplementedError error' do
-        expect { stat.get_report }.to raise_error(NotImplementedError)
+        expect { described_class.get(logs) }.to raise_error(NotImplementedError)
       end
     end
   end

@@ -5,9 +5,6 @@ module Stat
   class UniqueVisits < Stat::Base
     private
 
-    STAT_HEADER = 'Unique views:'
-    RECORD_SUFFICS = 'unique views'
-
     def stat
       return @stat if defined?(@stat)
 

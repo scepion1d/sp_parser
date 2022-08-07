@@ -2,32 +2,22 @@
 
 module Stat
   class Base
-    def initialize(logs)
-      @logs = logs
+    def self.get(logs, options = {})
+      new(logs).get(options)
     end
 
-    def get_report(options = {})
-      report = "#{self.class::STAT_HEADER}\n"
-      get_data(options).each do |key, val|
-        report += "#{key} #{val} #{self.class::RECORD_SUFFICS}\n"
-      end
-      report += "\n"
-    end
-
-    def get_data(options = {})
+    def get(options = {})
       order = options[:order]
-      return sort(stat, 1) if order == :asc
-      return sort(stat, -1) if order == :dsc
+      return sort(stat, self.class::ORDER[order]) if self.class::ORDER.key?(order)
 
       stat
     end
 
     protected
 
-    STAT_HEADER = 'TBA'
-    RECORD_SUFFICS = 'TBA'
-
     attr_reader :logs
+
+    ORDER = { asc: 1, dsc: -1 }.freeze
 
     def stat
       raise NotImplementedError
@@ -40,6 +30,10 @@ module Stat
 
     def grouped_logs
       @grouped_logs ||= logs.group_by { |log| log[:path] }
+    end
+
+    def initialize(logs)
+      @logs = logs
     end
   end
 end

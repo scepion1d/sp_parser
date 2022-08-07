@@ -5,9 +5,6 @@ module Stat
   class TotalVisits < Stat::Base
     private
 
-    STAT_HEADER = 'Total visits:'
-    RECORD_SUFFICS = 'visits'
-
     def stat
       return @stat if defined?(@stat)
 

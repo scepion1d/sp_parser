@@ -15,88 +15,42 @@ module Stat
       ]
     end
 
-    describe '#get_report' do
-      let(:header) { 'Total visits:' }
-      let(:suffix) { 'visits' }
-
-      context 'without sort' do
-        let(:expected_header) { "#{header}\n" }
-        let(:expected_entries) do
-          [
-            "/contact 2 #{suffix}\n",
-            "/index 1 #{suffix}\n",
-            "/help_page/1 3 #{suffix}\n"
-          ]
-        end
-
-        it_behaves_like 'generates correct unsorted report'
+    context 'without sort' do
+      let(:expected_result) do
+        {
+          '/contact' => 2,
+          '/index' => 1,
+          '/help_page/1' => 3
+        }
       end
 
-      context 'without asc sort' do
-        let(:expected_result) do
-          "#{header}\n" \
-            "/index 1 #{suffix}\n" \
-            "/contact 2 #{suffix}\n" \
-            "/help_page/1 3 #{suffix}\n" \
-            "\n"
-        end
-        let(:order) { :asc }
-
-        it_behaves_like 'generates correct sorted report'
-      end
-
-      context 'without dsc sort' do
-        let(:expected_result) do
-          "#{header}\n" \
-            "/help_page/1 3 #{suffix}\n" \
-            "/contact 2 #{suffix}\n" \
-            "/index 1 #{suffix}\n" \
-            "\n"
-        end
-        let(:order) { :dsc }
-
-        it_behaves_like 'generates correct sorted report'
-      end
+      it_behaves_like 'generates unsorted stat'
     end
 
-    describe '#get_data' do
-      context 'without sort' do
-        let(:expected_result) do
-          {
-            '/contact' => 2,
-            '/index' => 1,
-            '/help_page/1' => 3
-          }
-        end
-
-        it_behaves_like 'generates unsorted stat'
+    context 'with asc sort' do
+      let(:expected_result) do
+        {
+          '/index' => 1,
+          '/contact' => 2,
+          '/help_page/1' => 3
+        }
       end
+      let(:order) { :asc }
 
-      context 'with asc sort' do
-        let(:expected_result) do
-          {
-            '/index' => 1,
-            '/contact' => 2,
-            '/help_page/1' => 3
-          }
-        end
-        let(:order) { :asc }
+      it_behaves_like 'generates sorted stat'
+    end
 
-        it_behaves_like 'generates sorted stat'
+    context 'with dsc sort' do
+      let(:expected_result) do
+        {
+          '/help_page/1' => 3,
+          '/contact' => 2,
+          '/index' => 1
+        }
       end
+      let(:order) { :dsc }
 
-      context 'with dsc sort' do
-        let(:expected_result) do
-          {
-            '/help_page/1' => 3,
-            '/contact' => 2,
-            '/index' => 1
-          }
-        end
-        let(:order) { :dsc }
-
-        it_behaves_like 'generates sorted stat'
-      end
+      it_behaves_like 'generates sorted stat'
     end
   end
 end

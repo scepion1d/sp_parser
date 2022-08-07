@@ -5,11 +5,14 @@ Dir['./lib/**/*.rb', './app/**/*.rb'].each { |file| require file }
 
 file_path = ARGV[0]
 
-begin
-  logs = Files::Processor.call(file_path)
+logs = ParsingService.call(file_path)
 
-  puts Stat::TotalVisits.new(logs).get_report(order: :dsc)
-  puts Stat::UniqueVisits.new(logs).get_report(order: :dsc)
-rescue ArgumentError => error
-  AppLogger.warn("Processing of file `#{file_path}` failed: #{error.message}")
+return if logs.nil? || logs.class != Array
+
+{
+  Stat::TotalVisits => Stat::TotalVisitsPresenter,
+  Stat::UniqueVisits => Stat::UniqueVisitsPresetner
+}.each do |service, presenter|
+  report = service.get(logs, order: :dsc)
+  puts presenter.call(report) unless report.count.zero?
 end
