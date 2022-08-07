@@ -8,9 +8,9 @@ module Stat
 
     def get(options = {})
       order = options[:order]
-      return sort(stat, self.class::ORDER[order]) if self.class::ORDER.key?(order)
+      return stat unless self.class::ORDER.key?(order)
 
-      stat
+      sort(order)
     end
 
     protected
@@ -19,13 +19,14 @@ module Stat
 
     ORDER = { asc: 1, dsc: -1 }.freeze
 
-    def stat
-      raise NotImplementedError
+    def stat(&block)
+      raise NotImplementedError unless block_given?
+
+      @stat ||= grouped_logs.transform_values(&block)
     end
 
-    # :reek:UtilityFunction
-    def sort(data, order)
-      data.sort_by { |_k, val| val * order }.to_h
+    def sort(order)
+      stat.sort_by { |_k, val| val * self.class::ORDER[order] }.to_h
     end
 
     def grouped_logs

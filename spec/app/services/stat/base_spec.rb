@@ -33,50 +33,47 @@ module Stat
           allow_any_instance_of(described_class).to receive(:stat).and_return(initial_data)
         end
 
-        shared_examples '#sort receives call' do
+        shared_examples '#sort receives call and returns sorted data' do
           it 'correctly' do
             expect(service.get(order: order)).to eq(processed_data)
-            expect(service).to have_received(:sort).with(initial_data, expected_order)
+            expect(service).to have_received(:sort).with(order)
           end
         end
 
-        shared_examples '#sort doesn\'t receive call' do
+        shared_examples '#sort receives call and returns unsorted data' do
           it 'correctly' do
             expect(service.get(order: order)).to eq(initial_data)
-            expect(service).not_to receive(:sort).with(initial_data, expected_order)
+            expect(service).to_not receive(:sort)
           end
         end
 
         context 'when provided sotring order' do
-          let(:expected_order) { { asc: 1, dsc: -1 }[order] }
-
           before do
-            allow_any_instance_of(described_class).to receive(:sort).with(initial_data,
-                                                                          expected_order).and_return(processed_data)
+            allow_any_instance_of(described_class).to receive(:sort).with(order).and_return(processed_data)
           end
 
           context ':asc' do
             let(:order) { :asc }
 
-            it_behaves_like '#sort receives call'
+            it_behaves_like '#sort receives call and returns sorted data'
           end
 
           context ':dsc' do
             let(:order) { :dsc }
 
-            it_behaves_like '#sort receives call'
+            it_behaves_like '#sort receives call and returns sorted data'
           end
 
           context 'incorrect value' do
             let(:order) { :test }
 
-            it_behaves_like '#sort doesn\'t receive call'
+            it_behaves_like '#sort receives call and returns unsorted data'
           end
 
           context 'nil value' do
             let(:order) { nil }
 
-            it_behaves_like '#sort doesn\'t receive call'
+            it_behaves_like '#sort receives call and returns unsorted data'
           end
         end
 

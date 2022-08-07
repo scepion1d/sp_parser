@@ -1,19 +1,11 @@
 # frozen_string_literal: true
 
-# :reek:InstanceVariableAssumption
 module Stat
   class TotalVisits < Stat::Base
     private
 
     def stat
-      return @stat if defined?(@stat)
-
-      data = grouped_logs.dup
-      data.each do |path, visits|
-        data[path] = visits.count
-      end
-
-      @stat = data
+      super(&:count)
     end
   end
 end
