@@ -2,20 +2,64 @@
 
 module Stat
   describe UniqueVisits do
-    describe '#get' do
-      subject(:stat) { described_class.new(logs) }
+    subject(:stat) { described_class.new(logs) }
 
-      let(:logs) do
-        [
-          { path: '/help_page/1', ip: '126.318.035.001' },
-          { path: '/contact', ip: '184.123.665.001' },
-          { path: '/help_page/1', ip: '184.123.665.002' },
-          { path: '/help_page/1', ip: '184.123.665.003' },
-          { path: '/contact', ip: '184.123.665.002' },
-          { path: '/index', ip: '184.123.665.001' }
-        ]
+    let(:logs) do
+      [
+        { path: '/help_page/1', ip: '126.318.035.001' },
+        { path: '/contact', ip: '184.123.665.001' },
+        { path: '/help_page/1', ip: '184.123.665.002' },
+        { path: '/help_page/1', ip: '184.123.665.003' },
+        { path: '/contact', ip: '184.123.665.002' },
+        { path: '/index', ip: '184.123.665.001' }
+      ]
+    end
+
+    describe '#get_report' do
+      let(:header) { 'Unique views:' }
+      let(:suffix) { 'unique views' }
+
+      context 'without sort' do
+        let(:expected_header) { "#{header}\n" }
+        let(:expected_entries) do
+          [
+            "/contact 2 #{suffix}\n",
+            "/index 1 #{suffix}\n",
+            "/help_page/1 3 #{suffix}\n"
+          ]
+        end
+
+        it_behaves_like 'generates correct unsorted report'
       end
 
+      context 'without asc sort' do
+        let(:expected_result) do
+          "#{header}\n" \
+            "/index 1 #{suffix}\n" \
+            "/contact 2 #{suffix}\n" \
+            "/help_page/1 3 #{suffix}\n" \
+            "\n"
+        end
+        let(:order) { :asc }
+
+        it_behaves_like 'generates correct sorted report'
+      end
+
+      context 'without dsc sort' do
+        let(:expected_result) do
+          "#{header}\n" \
+            "/help_page/1 3 #{suffix}\n" \
+            "/contact 2 #{suffix}\n" \
+            "/index 1 #{suffix}\n" \
+            "\n"
+        end
+        let(:order) { :dsc }
+
+        it_behaves_like 'generates correct sorted report'
+      end
+    end
+
+    describe '#get_data' do
       context 'without sort' do
         let(:expected_result) do
           {

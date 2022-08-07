@@ -6,15 +6,15 @@ module Stat
       @logs = logs
     end
 
-    def print(options = {})
-      puts self.class::STAT_HEADER
-      get(options).each do |key, val|
-        puts "#{key} #{val} #{self.class::RECORD_SUFFICS}"
+    def get_report(options = {})
+      report = "#{self.class::STAT_HEADER}\n"
+      get_data(options).each do |key, val|
+        report += "#{key} #{val} #{self.class::RECORD_SUFFICS}\n"
       end
-      puts
+      report += "\n"
     end
 
-    def get(options = {})
+    def get_data(options = {})
       order = options[:order]
       return sort(stat, 1) if order == :asc
       return sort(stat, -1) if order == :dsc
@@ -30,7 +30,7 @@ module Stat
     attr_reader :logs
 
     def stat
-      throw NotImplementedError.new
+      raise NotImplementedError
     end
 
     # :reek:UtilityFunction

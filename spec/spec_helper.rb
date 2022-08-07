@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 require 'simplecov'
-Dir['./lib/**/*.rb', './app/**/*.rb'].each { |file| require file }
 
-SimpleCov.start
+SimpleCov.start do
+  minimum_coverage(100.00)
+  refuse_coverage_drop
+end
+
+Dir['./lib/**/*.rb', './app/**/*.rb'].each { |file| require file }
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
