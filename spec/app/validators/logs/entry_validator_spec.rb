@@ -45,8 +45,16 @@ module Logs
         end
       end
 
-      context 'when passed invalid log line (invalid delimiter)' do
+      context 'when passed invalid log line (double space delimeter)' do
         let(:log_line) { '/index  192.168.10.10' }
+
+        it 'fails validtion' do
+          expect(validation).to be_falsey
+        end
+      end
+
+      context 'when passed invalid log line (tab symbol delimiter)' do
+        let(:log_line) { "/index\t192.168.10.10" }
 
         it 'fails validtion' do
           expect(validation).to be_falsey
