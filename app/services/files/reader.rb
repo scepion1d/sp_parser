@@ -8,7 +8,7 @@ module Files
 
     def call
       validate
-      File.readlines(path)
+      readlines
     end
 
     private
@@ -23,6 +23,16 @@ module Files
       return if Files::PathValidator.valid?(path) && Files::AccessValidator.valid?(path)
 
       raise FileError, path
+    end
+
+    def readlines
+      [].tap do |lines|
+        File.open(path, 'r') do |file|
+          until (line = file.gets).is_a? NilClass
+            lines << line
+          end
+        end
+      end
     end
   end
 end
