@@ -13,8 +13,6 @@ class FileProcessor
   def call
     read_file
     filter_logs
-  rescue Errno::ENOENT, Errno::EISDIR => error
-    AppLogger.error "Processing failure: #{error.message}"
   end
 
   private
@@ -39,5 +37,7 @@ class FileProcessor
         raw_logs << line
       end
     end
+  rescue Errno::ENOENT, Errno::EISDIR => error
+    AppLogger.error "Processing failure: #{error.message}"
   end
 end

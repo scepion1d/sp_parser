@@ -33,38 +33,31 @@ describe FileProcessor do
         expect { logs }.to raise_error(ArgumentError)
       end
     end
-
-    context 'when file path points to a dir' do
-      let(:path) { '/path/to/dir' }
-      let(:msg) { "Processing failure: Is a directory - #{path}" }
-
-      before do
-        allow_any_instance_of(described_class).to receive(:read_file) do
-          raise Errno::EISDIR, path
+    context 'when invalid path' do
+      shared_examples 'writes error message and return empty data set' do
+        before do
+          allow(AppLogger).to receive(:error)
         end
-        allow(AppLogger).to receive(:error).with(msg)
-      end
 
-      it 'catches an error and writes a log message' do
-        expect { logs }.not_to raise_error
-        expect(AppLogger).to have_received(:error).with(msg).exactly(1).time
-      end
-    end
-
-    context 'when file does not exist' do
-      let(:path) { '/file/is/missing' }
-      let(:msg) { "Processing failure: No such file or directory - #{path}" }
-
-      before do
-        allow_any_instance_of(described_class).to receive(:read_file) do
-          raise Errno::ENOENT, path
+        it 'works correctly' do
+          expect { logs }.not_to raise_error
+          expect(logs.count).to eq(0)
+          expect(AppLogger).to have_received(:error).with(msg).exactly(1).time
         end
-        allow(AppLogger).to receive(:error).with(msg)
       end
 
-      it 'catches an error and writes a log message' do
-        expect { logs }.not_to raise_error
-        expect(AppLogger).to have_received(:error).with(msg).exactly(1).time
+      context 'points to a dir' do
+        let(:path) { './spec/fixtures' }
+        let(:msg) { "Processing failure: Is a directory @ io_fillbuf - fd:10 #{path}" }
+
+        it_behaves_like 'writes error message and return empty data set'
+      end
+
+      context 'when file does not exist' do
+        let(:path) { './spec/fixtures/absent_file' }
+        let(:msg) { "Processing failure: No such file or directory @ rb_sysopen - #{path}" }
+
+        it_behaves_like 'writes error message and return empty data set'
       end
     end
 
