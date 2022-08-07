@@ -3,16 +3,21 @@
 
 Dir['./lib/**/*.rb', './app/**/*.rb'].each { |file| require file }
 
-file_path = ARGV[0]
+AppLogger.use(Logger.new('logs/parser.log'))
 
-logs = ParsingService.call(file_path)
+path = ARGV[0]
 
-return if logs.nil? || logs.class != Array
+total_visits = Stat::TopTotalVisitsService.new
+uniq_visits = Stat::TopUniqueVisitsService.new
 
-{
-  Stat::TotalVisits => Stat::TotalVisitsPresenter,
-  Stat::UniqueVisits => Stat::UniqueVisitsPresetner
-}.each do |service, presenter|
-  report = service.get(logs, order: :dsc)
-  puts presenter.call(report) unless report.count.zero?
-end
+FileParsingService.call(
+  path,
+  LogParserService,
+  [
+    ->(log) { total_visits.add_entry(log) },
+    ->(log) { uniq_visits.add_entry(log) }
+  ]
+)
+
+puts Stat::StringPresenter.call(total_visits.finalized_stat, header: 'Total visits:', line_suffix: 'visits')
+puts Stat::StringPresenter.call(uniq_visits.finalized_stat, header: 'Unique visits:', line_suffix: 'unique visits')

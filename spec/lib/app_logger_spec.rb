@@ -17,7 +17,24 @@ describe AppLogger do
     end
   end
 
-  it 'returns returns same instance of logger for each call' do
+  it 'returns same instance of logger for each call' do
     expect(described_class.instance.logger).to eq(described_class.instance.logger)
+  end
+
+  context 'when custom logger provided' do
+    subject(:logger) { described_class.instance.logger }
+
+    let(:custom_logger) { Object.new }
+
+    before do
+      Singleton.__init__(described_class)
+      described_class.use(custom_logger)
+    end
+
+    after { Singleton.__init__(described_class) }
+
+    it 'uses custom logger instead of default' do
+      expect(logger).to eq(custom_logger)
+    end
   end
 end
