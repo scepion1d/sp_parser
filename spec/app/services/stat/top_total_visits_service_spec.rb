@@ -11,7 +11,7 @@ module Stat
         { path: '/help_page/1', ip: '184.123.665.067' },
         { path: '/help_page/1', ip: '184.123.665.067' },
         { path: '/contact', ip: '184.123.665.067' },
-        { path: '/index', ip: '184.123.665.067' },
+        { path: '/index', ip: '184.123.665.067' }
       ]
     end
 
@@ -19,7 +19,7 @@ module Stat
       {
         '/help_page/1' => 3,
         '/contact' => 2,
-        '/index' => 1,
+        '/index' => 1
       }
     end
 

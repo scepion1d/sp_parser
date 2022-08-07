@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class FileParsingService
-  def self.call(path, parser, aggregators = [])
-    new(path, parser, aggregators).call
+  def self.call(path, aggregators = [])
+    new(path, aggregators).call
   end
 
   def call
@@ -20,9 +20,8 @@ class FileParsingService
 
   private_methods :new
 
-  def initialize(path, parser, aggregators)
+  def initialize(path, aggregators)
     @path = path
-    @parser = parser
     @aggregators = aggregators
   end
 
@@ -37,8 +36,9 @@ class FileParsingService
     end
   end
 
+  # :reek:UtilityFunction
   def parse(line)
-    parser.call(line)
+    LogParserService.call(line)
   rescue LogsError => error
     AppLogger.warn "Can't process line: #{error.message}"
   end

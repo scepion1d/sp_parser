@@ -2,7 +2,7 @@
 
 describe FileParsingService do
   describe '#call' do
-    subject(:service_call) { described_class.call(path, parser, aggregators) }
+    subject(:service_call) { described_class.call(path, aggregators) }
 
     let(:parser) { LogParserService }
     let(:aggregator) { Stat::TopTotalVisitsService.new }

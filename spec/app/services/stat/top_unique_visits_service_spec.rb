@@ -20,7 +20,7 @@ module Stat
       {
         '/help_page/1' => 3,
         '/contact' => 2,
-        '/index' => 1,
+        '/index' => 1
       }
     end
 
