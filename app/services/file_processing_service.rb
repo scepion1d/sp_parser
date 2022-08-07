@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FileParsingService
+class FileProcessingService
   def self.call(path, aggregators = [])
     new(path, aggregators).call
   end

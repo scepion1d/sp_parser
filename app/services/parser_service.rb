@@ -27,7 +27,7 @@ class ParserService
   end
 
   def process_file(path)
-    FileParsingService.call(
+    FileProcessingService.call(
       path,
       [
         ->(log) { total_visits.add_entry(log) },

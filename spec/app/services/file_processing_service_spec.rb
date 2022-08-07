@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe FileParsingService do
+describe FileProcessingService do
   describe '#call' do
     subject(:service_call) { described_class.call(path, aggregators) }
 
