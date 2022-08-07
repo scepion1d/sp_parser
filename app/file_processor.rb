@@ -12,11 +12,11 @@ class FileProcessor
 
   def call
     read_file
-    parsed_logs = raw_logs
+    parsed_logs = LogsFilter.process(raw_logs)
 
-    AppLogger.info("#{parsed_logs.count} valid lines processed")
+    AppLogger.info("#{raw_logs.count} lines processd; #{parsed_logs.count} lines valid")
   rescue Errno::ENOENT, Errno::EISDIR => error
-    AppLogger.error "Processing failed: #{error.message}"
+    AppLogger.error "Processing failure: #{error.message}"
   end
 
   private
