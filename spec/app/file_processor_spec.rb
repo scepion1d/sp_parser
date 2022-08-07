@@ -2,26 +2,35 @@
 
 describe FileProcessor do
   describe '#call' do
+    subject(:logs) { described_class.call(path) }
+
     shared_examples 'file processing' do
+      let(:msg) { "100 lines processd; #{count_expected} lines valid" }
+
       before do
         allow(AppLogger).to receive(:info)
       end
 
       it 'works correctly' do
-        described_class.call(path)
+        expect(logs.instance_of?(Array)).to be_truthy
+        expect(logs.count).to eq(count_expected)
         expect(AppLogger).to have_received(:info).with(msg).exactly(1).time
       end
     end
 
     context 'when file path is nil' do
+      let(:path) { nil }
+
       it 'throws an ArgumentError' do
-        expect { described_class.call(nil) }.to raise_error(ArgumentError)
+        expect { logs }.to raise_error(ArgumentError)
       end
     end
 
     context 'when file path is empty string' do
+      let(:path) { '' }
+
       it 'throws an ArgumentError' do
-        expect { described_class.call('') }.to raise_error(ArgumentError)
+        expect { logs }.to raise_error(ArgumentError)
       end
     end
 
@@ -37,7 +46,7 @@ describe FileProcessor do
       end
 
       it 'catches an error and writes a log message' do
-        expect { described_class.call(path) }.not_to raise_error
+        expect { logs }.not_to raise_error
         expect(AppLogger).to have_received(:error).with(msg).exactly(1).time
       end
     end
@@ -54,28 +63,28 @@ describe FileProcessor do
       end
 
       it 'catches an error and writes a log message' do
-        expect { described_class.call(path) }.not_to raise_error
+        expect { logs }.not_to raise_error
         expect(AppLogger).to have_received(:error).with(msg).exactly(1).time
       end
     end
 
     context 'when file path is correct and file content is correct' do
       let(:path) { './spec/fixtures/valid_logs' }
-      let(:msg) { '100 lines processd; 100 lines valid' }
+      let(:count_expected) { 100 }
 
       it_behaves_like 'file processing'
     end
 
     context 'when file path is correct and file content isn\'t correct' do
       let(:path) { './spec/fixtures/invalid_logs' }
-      let(:msg) { '100 lines processd; 0 lines valid' }
+      let(:count_expected) { 0 }
 
       it_behaves_like 'file processing'
     end
 
     context 'when file path is correct and file content is partially correct' do
       let(:path) { './spec/fixtures/mixed_logs' }
-      let(:msg) { '100 lines processd; 89 lines valid' }
+      let(:count_expected) { 89 }
 
       it_behaves_like 'file processing'
     end

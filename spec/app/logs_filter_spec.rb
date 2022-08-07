@@ -2,31 +2,36 @@
 
 describe LogsFilter do
   describe '#process' do
+    subject(:process) { described_class.process(raw_logs) }
+
     shared_examples 'filtering' do
       before do
         allow(AppLogger).to receive(:info)
       end
 
       it 'works correctly' do
-        expect(described_class.process(raw_logs)).to eq(filtered_logs)
+        expect(process).to eq(filtered_logs)
       end
     end
 
     context 'when logs for filtering is nil' do
+      let(:raw_logs) { nil }
+
       it 'throws an ArgumentError' do
-        expect { described_class.process(nil) }.to raise_error(ArgumentError)
+        expect { process }.to raise_error(ArgumentError)
       end
     end
 
     context 'when logs for filtering is not an array' do
+      let(:raw_logs) { { test: 'test' } }
+
       it 'throws an ArgumentError' do
-        expect { described_class.process({ test: 'test' }) }.to raise_error(ArgumentError)
+        expect { process }.to raise_error(ArgumentError)
       end
     end
 
     context 'when empty array passed' do
       let(:raw_logs) { [] }
-
       let(:filtered_logs) { [] }
 
       it_behaves_like 'filtering'
