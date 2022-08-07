@@ -6,7 +6,7 @@ Dir['./lib/**/*.rb', './app/**/*.rb'].each { |file| require file }
 file_path = ARGV[0]
 
 begin
-  logs = FileProcessor.call(file_path)
+  logs = Files::Processor.call(file_path)
 
   puts Stat::TotalVisits.new(logs).get_report(order: :dsc)
   puts Stat::UniqueVisits.new(logs).get_report(order: :dsc)
