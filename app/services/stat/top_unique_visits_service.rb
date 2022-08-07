@@ -11,6 +11,8 @@ module Stat
       stat.transform_values(&:count).sort_by { |_key, val| -val }.to_h
     end
 
-    DEFAULT_VALUE = [].freeze
+    def default_value
+      []
+    end
   end
 end

@@ -12,10 +12,12 @@ module Stat
 
     protected
 
-    DEFAULT_VALUE = nil
-
     def stat
-      @stat ||= Hash.new(self.class::DEFAULT_VALUE)
+      @stat ||= Hash.new(default_value)
+    end
+
+    def default_value
+      raise NotImplementedError
     end
   end
 end

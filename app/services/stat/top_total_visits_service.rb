@@ -10,6 +10,8 @@ module Stat
       stat.sort_by { |_key, val| -val }.to_h
     end
 
-    DEFAULT_VALUE = 0
+    def default_value
+      0
+    end
   end
 end

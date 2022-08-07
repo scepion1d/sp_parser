@@ -33,10 +33,8 @@ module Stat
     end
 
     describe '#finalized_stat' do
-      let(:expected_value) { {} }
-
       it 'throws NotImplementedError error' do
-        expect(service.finalized_stat).to eq(expected_value)
+        expect { service.finalized_stat }.to raise_error(NotImplementedError)
       end
     end
   end
